@@ -1,0 +1,15 @@
+PROF_*
+*.DS_Store
+*.idea
+credentials*
+*checkpoint.ipynb
+.ipynb_checkpoints
+**/*.ipynb_checkpoints/
+.ipynb_checkpoints
+*/.ipynb_checkpoints/*
+01_Programacion_basica_y_Ramp-Up/Sprint_01/Unidad_02/.DS_Store
+01_Programacion_basica_y_Ramp-Up/Sprint_01/Unidad_01/.DS_Store
+01_Programacion_basica_y_Ramp-Up/Sprint_01/.DS_Store
+01_Programacion_basica_y_Ramp-Up/.DS_Store
+.DS_Store
+/
