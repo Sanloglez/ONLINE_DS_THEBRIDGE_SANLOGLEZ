@@ -1,0 +1,76 @@
+SELECT *
+FROM crime_scene_report
+WHERE date = 20180115 and city = "SQL City"
+
+---------------------
+SELECT * 
+FROM person
+WHERE name LIKE "Annabel%"
+-----------------
+SELECT *
+FROM facebook_event_checkin
+WHERE person_id = 16371
+-----------------
+SELECT *
+FROM interview
+WHERE person_id = 16371
+----------------
+SELECT *
+FROM get_fit_now_member
+WHERE person_id = 16371
+----------------
+SELECT *
+FROM get_fit_now_check_in
+WHERE check_in_date = 20180109
+---------------
+SELECT *
+FROM get_fit_now_member
+WHERE id = "48Z55" 
+--------------
+SELECT *
+FROM person
+WHERE name = "Morty Schapiro"
+--------------
+SELECT *
+FROM interview
+WHERE person_id = 14887
+---------------
+SELECT *
+FROM drivers_license
+WHERE plate_number LIKE "%H42W%"
+-------------------
+SELECT *
+FROM person
+WHERE license_id = 664760 
+----------------
+INSERT INTO solution VALUES (1, 'Jeremy Bowers');
+        
+        SELECT value FROM solution;
+--------------------
+SELECT *
+FROM interview 
+WHERE person_id = 67318
+------------
+SELECT *
+FROM drivers_license
+WHERE gender = "female" and car_make = "Tesla" and car_model = "Model S" and hair_color = "red"
+--------------
+SELECT *
+FROM person
+WHERE license_id IN (202298,291182,918773)
+--------------
+SELECT *
+FROM facebook_event_checkin
+WHERE event_name = "SQL Symphony Concert" and date LIKE "201712%"
+------------------
+SELECT *
+FROM facebook_event_checkin
+WHERE event_name = "SQL Symphony Concert" and date LIKE "201712%" and person_id = 99716
+--------------------
+SELECT *
+FROM person
+WHERE id = 99716
+-------------------
+SELECT *
+FROM person
+WHERE id = 99716
