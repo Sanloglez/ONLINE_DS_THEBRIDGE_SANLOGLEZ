@@ -42,12 +42,18 @@ EDA_Hábitos_de_Juego/
 - Segmentaciones por edad, género, dispositivo, motivación y género de juego.
 
 #### Conclusiones destacadas:
-- Las motivaciones influyen directamente en las horas de juego y el dispositivo.
-- Hay diferencias entre géneros:  Las jugadoras tienden a inclinarse hacia géneros con fuerte narrativa e inmersión, como Acción Aventura y Rol, y también hacia experiencias intensas
- como los FPS. Los jugadores muestran una mayor diversidad en sus gustos, con valores más repartidos, y destacan en géneros como Deportes, Simulación y Puzzle/Estrategia.
-- Los dispositivos móviles son más populares entre jugadores motivados por relajarse, mientras que el PC domina en perfiles competitivos.
-- El modo multijugador se asocia con motivaciones sociales y más horas semanales.
-- Perfil de jugador habitual definido.
+Hipótesis 1: ¿Qué factores influyen más en el número de horas jugadas?
+
+- El dispositivo y las motivaciones personales tienen un impacto claro en las horas jugadas.
+- En el juego nº1, se observa que los jugadores que usan móvil tienden a jugar más horas, probablemente por su accesibilidad.
+- Las motivaciones como la diversión, la competitividad y el alivio del estrés se relacionan directamente con un mayor tiempo de juego, especialmente en usuarios que superan las 10h semanales.
+- Sin embargo, en el juego nº2, los factores son más difusos. No hay un dispositivo claramente dominante y las motivaciones están más repartidas, lo que sugiere que otros elementos contextuales o de diseño del juego pueden influir más que las variables estudiadas.
+
+Hipótesis 2: ¿Hay diferencias claras según género o edad?
+
+Sí existen diferencias significativas:
+- En cuanto a edad, los jugadores jóvenes (16-20 años) prefieren dispositivos móviles y motivaciones como socializar y aliviar el estrés, mientras que los de mayor edad se enfocan más en la competitividad y la narrativa.
+- Por género, las mujeres muestran una mayor inclinación hacia el alivio del estrés y la diversión, mientras que los hombres se reparten más entre socializar, historia y aprendizaje. Además, hay diferencias en dispositivos y géneros de videojuegos preferidos.
 
 ---
 
