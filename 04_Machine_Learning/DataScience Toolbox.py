@@ -129,6 +129,27 @@ def plot_target_distribution(df, target):
     plt.tight_layout()
     plt.show()
 
+def plot_target_distribution_continuous(df, target, bins=30, kde=True, color="skyblue"):
+    """
+    Grafica la distribución de una variable continua con histograma y KDE opcional.
+
+    Args:
+        df (pd.DataFrame): DataFrame que contiene los datos.
+        target (str): Nombre de la variable continua a graficar.
+        bins (int): Número de bins para el histograma.
+        kde (bool): Si True, dibuja la línea KDE.
+        color (str): Color del histograma.
+    """
+    plt.figure(figsize=(8, 5))
+    sns.histplot(data=df, x=target, bins=bins, kde=kde, color=color)
+    plt.title(f"Distribución de la variable continua: {target}")
+    plt.xlabel(target)
+    plt.ylabel("Frecuencia")
+    plt.grid(axis="y", linestyle="--", alpha=0.6)
+    plt.tight_layout()
+    plt.show()
+
+
 def escalar_minmax(df, columnas):
     scaler = MinMaxScaler()
     df[columnas] = scaler.fit_transform(df[columnas])
@@ -352,6 +373,58 @@ def get_features_num_classification(df, target_col, umbral_corr=0.1, pvalue=None
         plt.figure(figsize=(10, 6))
         sns.heatmap(corr_map, annot=True, cmap="coolwarm", center=0)
         plt.title(f"Correlaciones con {target_col}")
+        plt.show()
+
+    return [r[0] for r in resultados_ordenados]
+
+from scipy.stats import pearsonr
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+def get_most_correlated_features(df, target_col, umbral_corr=0.1, pvalue=None, mostrar=False, top_n=None):
+    """
+    Devuelve las variables numéricas más correlacionadas con la variable target usando Pearson.
+
+    Args:
+        df (pd.DataFrame): DataFrame con los datos (todas las columnas deben ser numéricas).
+        target_col (str): Nombre de la variable objetivo.
+        umbral_corr (float): Umbral mínimo de correlación absoluta para mostrar resultados.
+        pvalue (float or None): Si se indica, filtra por significancia estadística.
+        mostrar (bool): Si True, muestra un heatmap de correlaciones con la target.
+        top_n (int or None): Número máximo de variables a devolver (por orden de correlación).
+
+    Returns:
+        list: Lista de nombres de columnas numéricas más correlacionadas con el target.
+    """
+
+    if target_col not in df.columns:
+        raise ValueError(f"La columna {target_col} no está en el DataFrame.")
+
+    if not pd.api.types.is_numeric_dtype(df[target_col]):
+        raise ValueError("La variable target debe ser numérica.")
+
+    if df[target_col].isnull().sum() > 0:
+        raise ValueError("La variable target contiene valores nulos.")
+
+    num_cols = df.select_dtypes(include=["float64", "int64"]).columns.drop(target_col)
+    resultados = []
+
+    for col in num_cols:
+        if df[col].isnull().sum() == 0:
+            corr, p = pearsonr(df[target_col], df[col])
+            if abs(corr) >= umbral_corr and (pvalue is None or p < pvalue):
+                resultados.append((col, corr, p))
+
+    resultados_ordenados = sorted(resultados, key=lambda x: abs(x[1]), reverse=True)
+
+    if top_n:
+        resultados_ordenados = resultados_ordenados[:top_n]
+
+    if mostrar:
+        columnas_corr = [target_col] + [r[0] for r in resultados_ordenados]
+        sns.heatmap(df[columnas_corr].corr(), annot=True, cmap="coolwarm", center=0)
+        plt.title(f"Heatmap de correlaciones con {target_col}")
         plt.show()
 
     return [r[0] for r in resultados_ordenados]
