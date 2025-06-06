@@ -44,6 +44,8 @@ def plot_predictions_vs_actual(y_real, y_pred):
     plt.show()
 
 
+
+
 # 📊 Métricas de evaluación (clasificación)
 
 from sklearn.metrics import classification_report, confusion_matrix, ConfusionMatrixDisplay
@@ -430,6 +432,8 @@ def get_most_correlated_features(df, target_col, umbral_corr=0.1, pvalue=None, m
     return [r[0] for r in resultados_ordenados]
 
 
+
+
 def plot_features_num_regression(df, target_col="", columns=[], umbral_corr=0, pvalue=None):
     """
     Genera pairplots con variables numéricas del dataframe que cumplan ciertas condiciones de correlación con target_col.
@@ -492,6 +496,49 @@ df = pd.DataFrame(data)
 
 result = plot_features_num_regression(df, target_col="target", umbral_corr=0.5, pvalue=0.05)
 print("Columnas seleccionadas:", result)
+
+def plot_feature_distributions_transformed(set_train, features_num, target_col='class'):
+    """
+    Visualiza la distribución de variables numéricas originales y transformadas (log y raíz cuadrada)
+    diferenciando por la variable target (clasificación).
+
+    Crea una matriz de subplots con 3 columnas por cada variable:
+    - Columna 1: distribución original
+    - Columna 2: log-transformación
+    - Columna 3: raíz cuadrada
+
+    Args:
+        set_train (pd.DataFrame): DataFrame con los datos de entrenamiento.
+        features_num (list): Lista de nombres de columnas numéricas.
+        target_col (str): Nombre de la columna target (por defecto 'class').
+
+    Returns:
+        None. Muestra los gráficos.
+    """
+    fig, ax = plt.subplots(len(features_num), 3, figsize=(20, 5 * len(features_num)))
+
+    for index, feature in enumerate(features_num):
+        log_feature = np.log1p(set_train[feature])
+        sqrt_feature = np.sqrt(set_train[feature])
+
+        sns.histplot(set_train, x=feature, hue=target_col, bins=50, kde=True, ax=ax[index, 0])
+        sns.histplot(x=log_feature, hue=set_train[target_col], bins=50, kde=True, ax=ax[index, 1])
+        sns.histplot(x=sqrt_feature, hue=set_train[target_col], bins=50, kde=True, ax=ax[index, 2])
+
+        ax[index, 0].set_title(f'{feature} (original)')
+        ax[index, 1].set_title(f'{feature} (log1p)')
+        ax[index, 2].set_title(f'{feature} (sqrt)')
+
+        ax[index, 0].set_xlabel('')
+        ax[index, 1].set_xlabel('')
+        ax[index, 2].set_xlabel('')
+        ax[index, 0].set_ylabel(feature)
+        ax[index, 1].set_ylabel('')
+        ax[index, 2].set_ylabel('')
+
+    plt.tight_layout()
+    plt.show()
+
 
 def get_features_cat_regression(df, target_col, pvalue=0.05):
     """
@@ -671,6 +718,14 @@ def aplicar_get_dummies(df, columnas_categoricas):
 
 def convertir_ordinal(df, columna, mapeo):
     return df[columna].map(mapeo)
+
+for col in features_to_transform:
+    desplaza = 0
+    if train_set_scaled[col].min() <= 0:
+        desplaza = int(abs(train_set_scaled[col].min())) + 1
+    train_set_scaled[col] = np.log(train_set_scaled[col] + desplaza)
+    test_set_scaled[col] = np.log(test_set_scaled[col] + desplaza)
+
 
 # 🔍 Análisis de errores en regresión
 residuos = y_test - y_pred
