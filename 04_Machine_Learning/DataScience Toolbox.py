@@ -132,6 +132,38 @@ def plot_decision_boundaries(clusterer, X, resolution=1000, show_centroids=True,
     else:
         plt.tick_params(labelleft=False)
 
+from sklearn.metrics import silhouette_score
+silhouette_scores = [silhouette_score(X_train_pca, model.labels_) for model in kmeans_per_k]
+best_index = np.argmax(silhouette_scores)
+best_k = k_range[best_index] # Esto para pintarlo 
+best_score = silhouette_scores[best_index] # equivalente a max(silhouette_scores)
+plt.figure(figsize=(8, 3))
+plt.plot(k_range, silhouette_scores, "bo-")
+plt.xlabel("$k$")
+plt.ylabel("Silhouette score")
+plt.plot(best_k, best_score, "rs")
+plt.grid()
+plt.show()
+
+for n_clusters in k_range:
+    model = KMeans(n_clusters, n_init = 10, random_state = 42)
+    model.fit(X_train_pca, y_train)
+    X_temp = model.transform(X_train_pca)
+    X_valid_temp = model.transform(X_valid_pca)
+    
+    rf_clf = RandomForestClassifier(n_estimators = 150, random_state = 42)
+    rf_clf.fit(X_temp, y_train)
+    print(n_clusters, rf_clf.score(X_valid_temp, y_valid))
+
+from sklearn.pipeline import make_pipeline
+for n_clusters in k_range:
+    pipeline = make_pipeline(
+        KMeans(n_clusters=n_clusters, n_init=10, random_state=42),
+        RandomForestClassifier(n_estimators=150, random_state=42)
+    )
+    pipeline.fit(X_train_pca, y_train)
+    print(n_clusters, pipeline.score(X_valid_pca, y_valid))
+
 def plot_silhouette_diagram(X, models_per_k, silhouette_scores, k_values=(3, 4, 5, 6)):
     """
     Dibuja un diagrama de silueta para varios valores de k.
