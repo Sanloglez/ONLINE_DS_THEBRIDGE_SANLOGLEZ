@@ -57,6 +57,142 @@ def mostrar_reporte_clasificacion(y_true, y_pred):
     print(classification_report(y_true, y_pred))
     ConfusionMatrixDisplay.from_predictions(y_true, y_pred, normalize='true')
 
+# 📈 Visualización de clustering
+
+def plot_data(X):
+    """
+    Visualiza los puntos de datos en un scatterplot.
+
+    Args:
+        X (array-like): Array 2D de datos con dos columnas (X[:, 0], X[:, 1]).
+    """
+    plt.plot(X[:, 0], X[:, 1], 'k.', markersize=2)
+
+def plot_centroids(centroids, weights=None, circle_color='w', cross_color='b'):
+    """
+    Visualiza los centroides en el scatterplot.
+
+    Args:
+        centroids (array-like): Coordenadas de los centroides.
+        weights (array-like, optional): Pesos para filtrar centroides (por defecto None).
+        circle_color (str): Color del círculo alrededor del centroide.
+        cross_color (str): Color de la cruz del centroide.
+    """
+    if weights is not None:
+        centroids = centroids[weights > weights.max() / 10]
+    plt.scatter(centroids[:, 0], centroids[:, 1],
+                marker='o', s=30, linewidths=8,
+                color=circle_color, zorder=10, alpha=0.9)
+    plt.scatter(centroids[:, 0], centroids[:, 1],
+                marker='x', s=15, linewidths=20,
+                color=cross_color, zorder=11, alpha=1)
+
+def plot_decision_boundaries(clusterer, X, resolution=1000, show_centroids=True,
+                             show_xlabels=True, show_ylabels=True):
+    """
+    Traza los límites de decisión del modelo de clustering en un diagrama de Voronoi.
+
+    Args:
+        clusterer (object): Modelo de clustering (debe tener método .predict y atributo .cluster_centers_).
+        X (array-like): Array 2D de datos con dos columnas (X[:, 0], X[:, 1]).
+        resolution (int): Resolución del grid para el gráfico (más alto = más preciso).
+        show_centroids (bool): Si True, muestra los centroides en el gráfico.
+        show_xlabels (bool): Si True, muestra las etiquetas del eje X.
+        show_ylabels (bool): Si True, muestra las etiquetas del eje Y.
+    """
+    # Definimos el grid de puntos
+    mins = X.min(axis=0) - 0.1
+    maxs = X.max(axis=0) + 0.1
+    xx, yy = np.meshgrid(np.linspace(mins[0], maxs[0], resolution),
+                         np.linspace(mins[1], maxs[1], resolution))
+    
+    # Predecimos a qué cluster pertenece cada punto del grid
+    Z = clusterer.predict(np.c_[xx.ravel(), yy.ravel()])
+    Z = Z.reshape(xx.shape)
+
+    # Dibujamos las regiones
+    plt.contourf(Z, extent=(mins[0], maxs[0], mins[1], maxs[1]), cmap="Pastel2")
+    plt.contour(Z, extent=(mins[0], maxs[0], mins[1], maxs[1]), linewidths=1, colors='k')
+
+    # Dibujamos los puntos de datos
+    plot_data(X)
+
+    # Dibujamos los centroides (opcional)
+    if show_centroids:
+        plot_centroids(clusterer.cluster_centers_)
+
+    # Etiquetas de los ejes
+    if show_xlabels:
+        plt.xlabel("$x_1$", fontsize=14)
+    else:
+        plt.tick_params(labelbottom=False)
+
+    if show_ylabels:
+        plt.ylabel("$x_2$", fontsize=14, rotation=0)
+    else:
+        plt.tick_params(labelleft=False)
+
+def plot_silhouette_diagram(X, models_per_k, silhouette_scores, k_values=(3, 4, 5, 6)):
+    """
+    Dibuja un diagrama de silueta para varios valores de k.
+
+    Args:
+        X (array-like): Dataset de features.
+        models_per_k (list): Lista de modelos KMeans entrenados, uno por cada k.
+                             models_per_k[k-1] debe corresponder a k clusters.
+        silhouette_scores (list): Lista de silhouette_score para cada k (debe estar alineada con models_per_k[1:]).
+        k_values (tuple): Tupla con los valores de k que se quieren visualizar.
+
+    Notas:
+    - La anchura de cada "cuchillo" representa el número de muestras por clúster.
+    - Cuanta más caída tenga un cuchillo, más dispersión de coeficientes en ese clúster.
+    - Los clústeres deberían estar en su mayoría por encima de la media.
+    - Las líneas a la izquierda (coeficientes negativos) indican instancias mal asignadas.
+    """
+    from sklearn.metrics import silhouette_samples
+    from matplotlib.ticker import FixedLocator, FixedFormatter
+    import matplotlib.pyplot as plt
+    import numpy as np
+    import matplotlib as mpl
+
+    plt.figure(figsize=(11, 9))
+
+    for k in k_values:
+        plt.subplot(2, 2, k - min(k_values))
+        
+        y_pred = models_per_k[k - 1].labels_
+        silhouette_coefficients = silhouette_samples(X, y_pred)
+
+        padding = len(X) // 30
+        pos = padding
+        ticks = []
+        for i in range(k):
+            coeffs = silhouette_coefficients[y_pred == i]
+            coeffs.sort()
+
+            color = mpl.cm.Spectral(i / k)
+            plt.fill_betweenx(np.arange(pos, pos + len(coeffs)), 0, coeffs,
+                              facecolor=color, edgecolor=color, alpha=0.7)
+            ticks.append(pos + len(coeffs) // 2)
+            pos += len(coeffs) + padding
+
+        plt.gca().yaxis.set_major_locator(FixedLocator(ticks))
+        plt.gca().yaxis.set_major_formatter(FixedFormatter(range(k)))
+        if k % 2 != 0:
+            plt.ylabel("Cluster")
+        
+        if k == max(k_values) or k == sorted(k_values)[-2]:
+            plt.gca().set_xticks([-0.1, 0, 0.2, 0.4, 0.6, 0.8, 1])
+            plt.xlabel("Silhouette Coefficient")
+        else:
+            plt.tick_params(labelbottom=True)
+
+        # El índice para silhouette_scores es k-2 porque silhouette_scores empieza en k=2
+        plt.axvline(x=silhouette_scores[k - 2], color="red", linestyle="--")
+        plt.title(f"$k={k}$", fontsize=16)
+
+    plt.tight_layout()
+    plt.show()
 
 # ⚖️ Técnicas de balanceo de clases
 
