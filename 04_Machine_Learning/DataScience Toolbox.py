@@ -924,7 +924,143 @@ def plot_residuals_vs_predictions(y_pred, residuos):
 
 
 
+# 📚 Visualización de clustering
+# === plot_data ===
+# Visualiza puntos 2D como scatter plot sencillo
+def plot_data(X):
+    """
+    Visualiza los puntos de un dataset 2D.
+    
+    Args:
+    - X: array (n_samples, 2), coordenadas de los puntos.
+    """
+    plt.plot(X[:, 0], X[:, 1], 'k.', markersize=2)
 
+# === plot_centroids ===
+# Visualiza centroides de clustering
+def plot_centroids(centroids, weights=None, circle_color='w', cross_color='b'):
+    """
+    Visualiza los centroides de un clustering.
+
+    Args:
+    - centroids: array (n_clusters, 2), coordenadas de los centroides.
+    - weights: opcional, array de pesos asociados a cada centroide.
+    - circle_color: color del círculo exterior.
+    - cross_color: color de la cruz del centroide.
+    """
+    if weights is not None:
+        centroids = centroids[weights > weights.max() / 10]
+    
+    plt.scatter(centroids[:, 0], centroids[:, 1],
+                marker='o', s=300, linewidths=2,
+                edgecolor=circle_color, facecolor='none', zorder=10)
+    plt.scatter(centroids[:, 0], centroids[:, 1],
+                marker='x', s=100, linewidths=2,
+                color=cross_color, zorder=11)
+
+# === plot_decision_boundaries ===
+# Visualiza fronteras de decisión de un clusterer con método predict
+def plot_decision_boundaries(clusterer, X, resolution=1000, show_centroids=True,
+                             show_xlabels=True, show_ylabels=True):
+    """
+    Visualiza las fronteras de decisión de un modelo de clustering que implemente `predict`.
+
+    Args:
+    - clusterer: objeto con método `.predict()` y opcionalmente `.cluster_centers_`.
+    - X: array (n_samples, 2), coordenadas de los datos.
+    - resolution: resolución de la malla.
+    - show_centroids: si True, dibuja los centroides.
+    - show_xlabels/show_ylabels: si True, muestra etiquetas de los ejes.
+    """
+    mins = X.min(axis=0) - 0.1
+    maxs = X.max(axis=0) + 0.1
+    xx, yy = np.meshgrid(np.linspace(mins[0], maxs[0], resolution),
+                         np.linspace(mins[1], maxs[1], resolution))
+    
+    Z = clusterer.predict(np.c_[xx.ravel(), yy.ravel()])
+    Z = Z.reshape(xx.shape)
+
+    plt.contourf(Z, extent=(mins[0], maxs[0], mins[1], maxs[1]),
+                 cmap="Pastel2", alpha=0.8)
+    plt.contour(Z, extent=(mins[0], maxs[0], mins[1], maxs[1]),
+                linewidths=1, colors='k')
+    
+    plot_data(X)
+    
+    if show_centroids and hasattr(clusterer, "cluster_centers_"):
+        plot_centroids(clusterer.cluster_centers_)
+    
+    if show_xlabels:
+        plt.xlabel("$x_1$", fontsize=14)
+    else:
+        plt.tick_params(labelbottom=False)
+    
+    if show_ylabels:
+        plt.ylabel("$x_2$", fontsize=14, rotation=0)
+    else:
+        plt.tick_params(labelleft=False)
+
+# === plot_dbscan ===
+# Visualiza resultados de DBSCAN
+def plot_dbscan(dbscan, X, size=100, show_xlabels=True, show_ylabels=True):
+    """
+    Visualiza un clustering generado con DBSCAN.
+
+    Args:
+    - dbscan: objeto DBSCAN ya entrenado.
+    - X: array (n_samples, 2), coordenadas de los datos.
+    - size: tamaño de los puntos core.
+    - show_xlabels/show_ylabels: si True, muestra etiquetas de los ejes.
+    """
+    core_mask = np.zeros_like(dbscan.labels_, dtype=bool)
+    core_mask[dbscan.core_sample_indices_] = True
+    
+    anomalies_mask = dbscan.labels_ == -1
+    non_core_mask = ~(core_mask | anomalies_mask)
+
+    cores = dbscan.components_
+    anomalies = X[anomalies_mask]
+    non_cores = X[non_core_mask]
+
+    plt.scatter(cores[:, 0], cores[:, 1],
+                c=dbscan.labels_[core_mask], marker='o', s=size, cmap="Paired")
+    plt.scatter(cores[:, 0], cores[:, 1], marker='*', s=50, c=dbscan.labels_[core_mask])
+    plt.scatter(anomalies[:, 0], anomalies[:, 1],
+                c="r", marker="x", s=100, label="Outliers")
+    plt.scatter(non_cores[:, 0], non_cores[:, 1],
+                c=dbscan.labels_[non_core_mask], marker=".", s=30)
+
+    if show_xlabels:
+        plt.xlabel("$x_1$", fontsize=14)
+    else:
+        plt.tick_params(labelbottom=False)
+
+    if show_ylabels:
+        plt.ylabel("$x_2$", fontsize=14, rotation=0)
+    else:
+        plt.tick_params(labelleft=False)
+
+    plt.title(f"DBSCAN: eps={dbscan.eps:.2f}, min_samples={dbscan.min_samples}", fontsize=14)
+
+
+def plot_dendrogram(data, method='ward', metric='euclidean', figsize=(10,7)):
+    """
+    Traza un dendrograma para visualizar la estructura jerárquica de los clusters.
+
+    Args:
+        data (pd.DataFrame): Datos que se usarán para el clustering.
+        method (str): Método de linkage ('single', 'complete', 'average', 'ward').
+        metric (str): Métrica de distancia ('euclidean', 'manhattan', etc.).
+        figsize (tuple): Tamaño de la figura.
+
+    Returns:
+        None. Muestra el dendrograma.
+    """
+    plt.figure(figsize=figsize)
+    plt.title("Dendrograma")
+    clusters = shc.linkage(data, method=method, metric=metric)
+    shc.dendrogram(Z=clusters)
+    plt.show()
 
 
 
