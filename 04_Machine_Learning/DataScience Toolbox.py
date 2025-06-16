@@ -1062,6 +1062,16 @@ def plot_dendrogram(data, method='ward', metric='euclidean', figsize=(10,7)):
     shc.dendrogram(Z=clusters)
     plt.show()
 
+# Heatmap componentes
+# ==============================================================================
+fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(8, 4))
+componentes = modelo_pca.components_
+plt.imshow(componentes.T, cmap='viridis', aspect='auto')
+plt.yticks(range(len(datos.columns)), datos.columns)
+plt.xticks(range(len(datos.columns)), np.arange(modelo_pca.n_components_) + 1)
+plt.grid(False)
+plt.colorbar();
+
 
 
 
