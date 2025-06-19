@@ -1,0 +1,3 @@
+Additional versions of the corpus from different steps of the data curation process and the R scripts used were previously made available on the now defunct corpus.mml.cam.ac.uk page.
+
+Should you need these files, please contact either Dr Dora Alexopoulou (ta259@cam.ac.uk) or Itamar Shatz (is442@cam.ac.uk).
