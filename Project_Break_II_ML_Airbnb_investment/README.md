@@ -113,7 +113,7 @@ Additionally, it identifies listings whose real price is significantly lower tha
 ---
 ## Repository structure
 
-ML_Airbnb_PrecioMadrid/
+Project_Break_II_ML_Airbnb_investment/
 ├── main.ipynb # Final notebook with the full process  
 ├── README.md # Project overview  
 ├── presentacion.pdf # Summary presentation for the video  
