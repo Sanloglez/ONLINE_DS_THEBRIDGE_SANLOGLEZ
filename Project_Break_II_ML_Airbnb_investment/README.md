@@ -6,16 +6,18 @@ Además, se identifican alojamientos cuyo precio real está significativamente p
 ---
 ## Estructura del repositorio
 
-ML_Airbnb_PrecioMadrid/
-├── main.ipynb # Notebook final con el proceso completo
-├── README.md # Descripción general del proyecto
-├── presentacion.pdf # Resumen visual para exposición
+```
+Project_Break_II_ML_Airbnb_investment/
+├── main.ipynb                # Notebook final con el proceso completo
+├── README.md                 # Descripción general del proyecto
+├── presentacion.pdf          # Resumen visual para exposición
 └── src/
-├── data/ # Archivo geojson con mapa de Madrid
-├── data_sample/ # Subconjunto del dataset (X_train, y_train, oportunidades, etc.)
-├── img/ # Imágenes exportadas 
-├── models/ # Modelos entrenados (.joblib)
-└── utils/ # Funciones auxiliares (toolbox)
+    ├── data/                 # Archivo geojson con mapa de Madrid
+    ├── data_sample/          # Subconjunto del dataset (X_train, y_train, oportunidades, etc.)
+    ├── img/                  # Imágenes exportadas 
+    ├── models/               # Modelos entrenados (.joblib)
+    └── utils/                # Funciones auxiliares (toolbox)
+```
 
 ---
 ## Descripción del proyecto
