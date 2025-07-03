@@ -512,6 +512,97 @@ def get_features_num_regression(df,target_col,umbral_corr,pvalue=None,mostrar=Fa
             if p < pvalue:
                 lista.append(col)
     return lista
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestRegressor
+
+def buscar_mejor_umbral_modelo(df, target_col="price", umbrales=[400, 500, 600, 700], test_size=0.2, random_state=42):
+    """
+    Prueba varios umbrales de precio, entrena un modelo para cada subconjunto filtrado,
+    y compara su rendimiento (MAE, RMSE, R²).
+
+    Args:
+        df (DataFrame): DataFrame completo con las variables ya codificadas.
+        target_col (str): Nombre de la variable objetivo.
+        umbrales (list): Lista de umbrales máximos de precio a probar.
+        test_size (float): Tamaño del test set en train_test_split.
+        random_state (int): Semilla para reproducibilidad.
+
+    Returns:
+        DataFrame con los resultados por umbral.
+    """
+    resultados = []
+
+    for tope in umbrales:
+        df_filtro = df[df[target_col] < tope].copy()
+
+        if df_filtro.shape[0] < 100:
+            continue  # ignorar si hay pocos datos
+
+        X = df_filtro.drop(columns=[target_col])
+        y = np.log1p(df_filtro[target_col])  # log(price)
+
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=random_state)
+
+        modelo = RandomForestRegressor(random_state=random_state)
+        modelo.fit(X_train, y_train)
+
+        y_pred_log = modelo.predict(X_test)
+        y_pred = np.expm1(y_pred_log)
+        y_test_real = np.expm1(y_test)
+
+        mae = mean_absolute_error(y_test_real, y_pred)
+        rmse = np.sqrt(mean_squared_error(y_test_real, y_pred))
+        r2 = r2_score(y_test_real, y_pred)
+
+        resultados.append({
+            "Tope (€)": tope,
+            "MAE (€)": round(mae, 2),
+            "RMSE (€)": round(rmse, 2),
+            "R²": round(r2, 4),
+            "N registros": df_filtro.shape[0]
+        })
+
+    return pd.DataFrame(resultados).sort_values("MAE (€)")
+
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+
+def comparar_modelos_regresion(modelos, X_test, y_test, transformar=False):
+    """
+    Compara varios modelos de regresión calculando MAE, RMSE y R².
+
+    Args:
+        modelos (dict): Diccionario con nombre: modelo entrenado.
+        X_test (DataFrame o array): Datos de test.
+        y_test (array): Valores reales.
+        transformar (bool): Si True, aplica `np.expm1()` a predicciones y a `y_test` (para deshacer log).
+
+    Returns:
+        DataFrame con métricas por modelo.
+    """
+    resultados = []
+
+    if transformar:
+        y_test_ = np.expm1(y_test)
+    else:
+        y_test_ = y_test
+
+    for nombre, modelo in modelos.items():
+        y_pred = modelo.predict(X_test)
+        if transformar:
+            y_pred = np.expm1(y_pred)
+        
+        mae = mean_absolute_error(y_test_, y_pred)
+        rmse = np.sqrt(mean_squared_error(y_test_, y_pred))
+        r2 = r2_score(y_test_, y_pred)
+
+        resultados.append({
+            "Modelo": nombre,
+            "MAE (€)": round(mae, 2),
+            "RMSE (€)": round(rmse, 2),
+            "R²": round(r2, 4)
+        })
+
+    return pd.DataFrame(resultados).sort_values(by="MAE (€)")
 
 from scipy.stats import pointbiserialr
 import warnings

@@ -65,9 +65,9 @@ Para ello, se ha trabajado con datos públicos del portal Inside Airbnb, aplican
 
 | Métrica       | Sin filtrar | Filtro < 500 € + log(price) |
 |---------------|-------------|------------------------------|
-| MAE           | 65.84 €     | 32.94 €                      |
-| RMSE          | 209.08 €    | 55.93 €                      |
-| R²            | -0.02       | 0.40                         |
+| MAE           | 65.84 €     | 33.84 €                      |
+| RMSE          | 209.08 €    | 57.38 €                      |
+| R²            | -0.02       | 0.37                        |
 
 El modelo final, entrenado sobre precios filtrados y transformados logarítmicamente, logra predecir el precio de alojamientos “normales” (por debajo de 500 €) con un error medio aceptable y mayor capacidad explicativa.
 
@@ -170,9 +170,9 @@ To achieve this, we worked with public data from Inside Airbnb and applied a pip
 
 | Metric         | Without filtering | Filter < 500 € + log(price) |
 |----------------|-------------------|------------------------------|
-| MAE            | 65.84 €           | 32.94 €                      |
-| RMSE           | 209.08 €          | 55.93 €                      |
-| R²             | -0.02             | 0.40                         |
+| MAE            | 65.84 €           | 33.84 €                      |
+| RMSE           | 209.08 €          | 57.38 €                      |
+| R²             | -0.02             | 0.37                         |
 
 The final model, trained on log-transformed prices under 500 €, is able to predict prices for “standard” listings with reasonable error and improved explanatory power.
 
