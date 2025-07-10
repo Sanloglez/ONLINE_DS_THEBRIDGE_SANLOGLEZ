@@ -1,10 +1,10 @@
-# 📊 EDA – Hábitos de Juego en Videojuegos 🎮
+# EDA – Hábitos de Juego en Videojuegos 🎮
 
 Un proyecto de análisis exploratorio de datos (EDA) centrado en los hábitos de los jugadores: cuánto juegan, por qué juegan, qué dispositivos prefieren y qué géneros de juegos consumen más. Basado en una encuesta a 500 jugadores de videojuegos.
 
 ---
 
-## 📁 Repositorio
+## Repositorio
 
 ```
 EDA_Hábitos_de_Juego/
@@ -23,7 +23,7 @@ EDA_Hábitos_de_Juego/
 
 ---
 
-## 👩‍💻 Proyecto
+## Proyecto
 
 ### Análisis de hábitos y perfiles de jugadores a partir de una encuesta
 **Tecnologías:** Python, Pandas, Matplotlib, Seaborn, Jupyter Notebook  
